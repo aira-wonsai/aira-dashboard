@@ -1,0 +1,10 @@
+{
+  "lastUpdated": "2026-02-09T12:26:00-05:00",
+  "jobs": [
+    {
+      "name": "Dashboard Data Sync",
+      "schedule": "Every 15 minutes",
+      "status": "active"
+    }
+  ]
+}
