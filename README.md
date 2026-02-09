@@ -13,6 +13,7 @@ A personal dashboard for tracking activities, news, stocks, and more.
 ## Tech Stack
 
 - **Frontend**: HTML5, Tailwind CSS, Alpine.js
+- **Backend**: Node.js data sync scripts
 - **Testing**: Vitest (unit tests), Playwright (E2E tests)
 - **CI/CD**: GitHub Actions
 - **Deployment**: Vercel
@@ -51,13 +52,13 @@ npm run test:visual
 
 ### Development Server
 ```bash
-# Serve the public directory
+# Serve public directory
 npx serve public -p 8080
 ```
 
 ## Deployment
 
-This project is deployed to Vercel: https://aira-dashboard.vercel.app
+This project is deployed to: **https://aira-dashboard.vercel.app**
 
 **Automatic deployments**: Push to `main` branch triggers Vercel deployment via GitHub Actions
 
@@ -83,18 +84,71 @@ npx vercel --token $VERCEL_TOKEN
 ### How to Generate Tokens
 
 **GitHub Token:**
-1. Go to https://github.com/settings/tokens
+1. Go to: https://github.com/settings/tokens
 2. Click "Generate new token"
 3. Note: "Aira Dashboard"
 4. Select scopes: `repo` (full control of repositories)
 5. Generate token
 
 **Vercel Token:**
-1. Go to https://vercel.com/account/tokens
+1. Go to: https://vercel.com/account/tokens
 2. Click "Create Token"
 3. Token description: "Aira Dashboard"
 4. Scope: "Full Account"
 5. Generate token
+
+## Automatic Data Sync (Every 15 Minutes)
+
+The dashboard automatically updates every 15 minutes via a cron job.
+
+### How It Works
+
+1. **Cron Job Runs**: Every 15 minutes
+2. **Data Sync Script Executes**: `scripts/auto-sync.sh`
+3. **Tasks Performed**:
+   - Parses memory files for activities
+   - Updates all JSON data files in `public/data/`
+   - Commits changes to Git
+   - Pushes to GitHub main branch
+4. **Vercel Auto-Deploys**: GitHub Actions detects push and deploys to Vercel
+5. **Dashboard Refreshes**: Vercel serves updated data automatically
+
+### Setting Up the Cron Job
+
+To enable automatic 15-minute updates, set up a cron job on your system:
+
+```bash
+# Add to crontab (runs every 15 minutes)
+*/15 * * * * /Users/aira/.openclaw/workspace/aira-dashboard/scripts/auto-sync.sh >> /Users/aira/.openclaw/logs/aira-dashboard-cron.log 2>&1
+
+# To view cron jobs
+crontab -l
+
+# To edit cron jobs
+crontab -e
+```
+
+### Cron Job Output
+
+The sync script creates detailed logs with timestamps:
+- `🔄 Starting Aira Dashboard auto-sync...` - Script start
+- `📊 Running data sync...` - Parsing memory files
+- `✅ Changes detected, committing...` - Git commit with timestamp
+- `📤 Pushing to GitHub (will trigger Vercel deploy)...` - Push to remote
+- `✅ Successfully synced and deployed!` - Successful deployment
+- `✅ No changes, already up to date` - No changes detected
+
+### Manual Sync (On Demand)
+
+You can also trigger a manual sync anytime:
+
+```bash
+# Run sync script directly
+npm run auto-sync
+
+# Or execute manually
+bash ./scripts/auto-sync.sh
+```
 
 ## Cron Jobs
 
@@ -102,7 +156,9 @@ npx vercel --token $VERCEL_TOKEN
   - Parses memory files
   - Updates JSON data files
   - Commits and pushes to GitHub
-  - Triggers Vercel auto-deploy
+  - Triggers Vercel auto-deployment
+
+The sync script (`scripts/auto-sync.sh`) handles all updates automatically and provides detailed logging for troubleshooting.
 
 ## License
 
@@ -126,7 +182,8 @@ aira-dashboard/
 │   └── index.html           # Main dashboard
 ├── scripts/
 │   ├── parse-memory.js    # Parser for memory .md files
-│   └── sync-data.js       # Main data sync script
+│   ├── sync-data.js       # Main data sync script
+│   └── auto-sync.sh        # Automatic sync cron job (15 min interval)
 ├── tests/
 │   ├── unit.test.js       # Vitest unit tests
 │   └── e2e.test.js        # Playwright E2E tests
@@ -144,6 +201,24 @@ aira-dashboard/
 
 1. **Memory Parsing**: `parse-memory.js` reads `.md` files from `/memory/` directory
 2. **Data Updates**: `sync-data.js` runs all parsers and updates JSON files
-3. **Git Commit**: Changes are committed to GitHub
-4. **Auto-Deploy**: GitHub Actions triggers Vercel deployment
-5. **Live URL**: Dashboard is automatically updated at https://aira-dashboard.vercel.app
+3. **Git Commit**: `auto-sync.sh` commits changes with timestamp
+4. **GitHub Push**: Changes are pushed to origin/main
+5. **Vercel Deploy**: GitHub Actions triggers automatic deployment
+6. **Dashboard Update**: Vercel serves updated data (refreshes every 5 min)
+
+### Automation Features
+
+- **Zero Manual Intervention**: Once cron job is set up, no manual syncs needed
+- **Change Detection**: Sync only runs if data has changed
+- **Detailed Logging**: All sync operations are timestamped and logged
+- **Rollback Support**: Git history allows reverting any problematic changes
+- **Deployment Trace**: GitHub Actions logs all deployments with commit SHAs
+
+### Monitoring
+
+**Sync Logs**: `/Users/aira/.openclaw/logs/aira-dashboard-cron.log`
+- **GitHub Actions**: https://github.com/aira-wonsai/aira-dashboard/actions
+- **Vercel Dashboard**: https://vercel.com/aira-wonsai/aira-dashboard
+- **Live Dashboard**: https://aira-dashboard.vercel.app
+
+The entire pipeline is automated and provides multiple monitoring points for any issues.
