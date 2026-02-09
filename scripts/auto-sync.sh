@@ -9,16 +9,23 @@
 set -e  # Exit on error
 
 cd "$(dirname "$0")"
-PROJECT_DIR="/Users/aira/.openclaw/workspace/aira-dashboard"
 
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] 🔄 Starting Aira Dashboard auto-sync..."
 
-# Change to project directory
-cd "$PROJECT_DIR"
+# Create data directory if it doesn't exist
+mkdir -p public/data
 
-# Run data sync
+# Create data files if they don't exist
+touch public/data/activities.json
+touch public/data/news.json
+touch public/data/stocks.json
+touch public/data/moltbook.json
+touch public/data/schedule.json
+
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] 📊 Running data sync..."
-npm run sync
+
+# Run data sync (this will create/update JSON files)
+npm run sync 2>&1
 
 # Check if there are changes
 if git diff --quiet --exit-code; then
