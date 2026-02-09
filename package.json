@@ -5,6 +5,7 @@
   "scripts": {
     "sync": "node scripts/sync-data.js",
     "parse-memory": "node scripts/parse-memory.js",
+    "auto-sync": "bash ./scripts/auto-sync.sh",
     "test": "vitest",
     "test:e2e": "playwright test",
     "test:ui": "playwright test --ui",
