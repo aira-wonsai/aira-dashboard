@@ -1,40 +1,33 @@
-# Dependencies
-node_modules/
-
-# Test coverage
-coverage/
-.nyc_output/
-
-# Playwright
-playwright-report/
-test-results/
-playwright/.cache/
-
-# Vitest
-.vitest/
-
-# Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# OS
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Environment
+# Environment Variables
 .env
 .env.local
 .env.*.local
 
-# Build artifacts
-dist/
-build/
-.env
+# Sensitive Documentation (Aira's assets and user info)
+ASSETS.md
+WON_SONG.md
+ACCESS_GUIDE.md
+
+# Credentials and Tokens
+*.pem
+*.key
+*.crt
+secrets/
+credentials/
+.tokens/
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
